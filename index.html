@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trust Lab · Grade 12 AI</title>
+<style>
+:root{--navy:#14163D;--ink:#232654;--indigo:#5B4BFF;--indigo2:#7C6CFF;--coral:#FF5D73;--sun:#FFC93C;--teal:#12B5A5;--sky:#2F9BFF;--lime:#7FD13B;--bg:#F3F5FF;--card:#fff;--line:#D7DBF5;--muted:#5C6190;--ok:#12A150;--bad:#E5384F;
+--tealt:#D6F6F1;--sunt:#FFF3CC;--coralt:#FFE4E8;--indigot:#E8E5FF;--limet:#E7F8D5;--skyt:#DDEEFF}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;font-size:16px}
+header{background:linear-gradient(120deg,var(--navy),var(--teal));color:#fff;padding:14px 18px}
+header h1{margin:0;font-size:1.35rem;letter-spacing:.2px}
+header p{margin:2px 0 0;font-size:.88rem;opacity:.9}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;background:#fff;border-bottom:3px solid var(--indigo);position:sticky;top:0;z-index:5}
+nav button{border:2px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}
+nav button .n{display:inline-block;background:var(--indigo);color:#fff;border-radius:999px;padding:0 8px;margin-right:6px;font-size:.8rem}
+nav button.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+nav button.on .n{background:#fff;color:var(--indigo)}
+main{max-width:1020px;margin:0 auto;padding:16px 14px 60px}
+section.tab{display:none}section.tab.on{display:block}
+h2{margin:6px 0 4px;font-size:1.35rem}
+.sub{color:var(--muted);margin:0 0 12px}
+.card{overflow-x:auto;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin:12px 0}
+.card h3{margin:0 0 6px;font-size:1.08rem}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.col{flex:1;min-width:260px}
+.btn{border:0;background:var(--indigo);color:#fff;border-radius:12px;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer}
+.btn.alt{background:#fff;color:var(--indigo);border:2px solid var(--indigo)}
+.btn.coral{background:var(--coral)}
+.btn.teal{background:var(--teal)}
+.btn:disabled{opacity:.45;cursor:default}
+.opt{display:block;width:100%;text-align:left;border:2px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;margin:7px 0;font:inherit;cursor:pointer}
+.opt:hover{border-color:var(--indigo2);background:var(--indigot)}
+.opt.right{border-color:var(--ok);background:#E6F8EC}
+.opt.wrong{border-color:var(--bad);background:#FFE9EC}
+.fb{margin-top:8px;padding:9px 12px;border-radius:10px;background:var(--sunt);display:none}
+.fb.show{display:block}
+.tag{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:800;background:var(--indigot);color:var(--indigo)}
+.tag.g{background:var(--limet);color:#2C7A00}.tag.r{background:var(--coralt);color:#B21E36}.tag.y{background:var(--sunt);color:#8A6200}.tag.t{background:var(--tealt);color:#0B7A6F}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}
+th{background:var(--indigot);color:var(--navy)}
+td.c,th.c{text-align:center}
+select{font:inherit;padding:5px 6px;border-radius:8px;border:2px solid var(--line);background:#fff;max-width:100%}
+.stat{display:inline-block;min-width:112px;text-align:center;border-radius:14px;padding:8px 10px;margin:4px 6px 4px 0;background:var(--indigot)}
+.stat b{display:block;font-size:1.45rem}
+.stat span{font-size:.78rem;color:var(--muted)}
+.stat.good{background:var(--limet)}.stat.warn{background:var(--sunt)}.stat.bad{background:var(--coralt)}
+.bar{height:16px;border-radius:9px;background:#E7E9FA;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--indigo)}
+.bar.g i{background:var(--ok)}.bar.o i{background:var(--sun)}.bar.r i{background:var(--bad)}
+.flow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.node{border:2px solid var(--navy);border-radius:12px;padding:8px 10px;background:#fff;font-weight:700;font-size:.88rem;text-align:center;min-width:92px}
+.node.weak{background:var(--sunt);border-color:#C58F00}
+.node.bad{background:var(--coralt);border-color:var(--bad)}
+.node.ok{background:var(--limet);border-color:var(--ok)}
+.node.chk{border-style:dashed}
+.arrow{font-weight:900;color:var(--navy)}
+.stars{font-size:1.5rem;letter-spacing:3px;color:var(--sun)}
+.stars .off{color:#D0D3EC}
+.note{font-size:.84rem;color:var(--muted)}
+.big{font-size:2rem;font-weight:900;color:var(--indigo)}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+.steps button{border:2px solid var(--line);background:#fff;border-radius:10px;padding:5px 10px;font:inherit;font-weight:700;cursor:pointer;color:var(--muted)}
+.steps button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.steps button.done{border-color:var(--ok);color:var(--ok)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:420px}
+.cell{border:2px solid var(--line);border-radius:10px;padding:6px;text-align:center;font-size:.78rem;min-height:56px}
+.ok-text{color:var(--ok);font-weight:800}.bad-text{color:var(--bad);font-weight:800}
+details summary{cursor:pointer;font-weight:700;color:var(--indigo)}
+footer{max-width:1020px;margin:0 auto;padding:0 14px 40px;font-size:.8rem;color:var(--muted)}
+@media (max-width:560px){.stat{min-width:92px}nav button{padding:7px 10px}}
+@media print{nav,.btn{display:none}}
+input[type=text],input[type=number]{font:inherit;padding:6px 8px;border-radius:8px;border:2px solid var(--line);width:100%;max-width:200px}
+textarea{font:inherit;padding:8px;border-radius:8px;border:2px solid var(--line);width:100%}
+.mx{display:inline-block;vertical-align:top;margin:0 14px 10px 0}
+.mx table{width:auto;min-width:230px}
+.mx th,.mx td{text-align:center;padding:6px 10px}
+.mx td.tp,.mx td.tn{background:var(--limet)}.mx td.fp,.mx td.fn{background:var(--coralt)}
+.lev{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.lev label{font-weight:700}
+.log td.pass{color:#0B7A3E;font-weight:800}.log td.fail{color:#B21E36;font-weight:800}.log td.warn{color:#8A6200;font-weight:800}
+.item-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
+.item{border:2px solid var(--line);border-radius:10px;padding:6px 8px;background:#fff;font-size:.84rem;cursor:pointer;text-align:left;font-family:inherit}
+.item.sel{border-color:var(--coral);background:var(--coralt)}
+.code{font-family:Consolas,Menlo,monospace;background:#fff;border:2px dashed var(--indigo);border-radius:8px;padding:4px 10px;font-weight:800;letter-spacing:1px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chk{display:block;margin:6px 0}
+</style>
+</head>
+<body>
+<header>
+<h1>Trust Lab · Grade 12 AI</h1>
+<p>Four stations: audit the risks, measure fairness, run and verify the matcher, architect and pressure-test. Made-up data only. Nothing is sent anywhere: no login, no tracking.</p>
+</header>
+<nav id="nav"></nav>
+<main>
+<section class="tab" id="audit">
+<h2>H1 · Risk Audit</h2>
+<p class="sub">A company uses an AI screener to shortlist CVs. First find where each problem enters the pipeline, then rate and rank the risks like an auditor.</p>
+<div class="steps" id="a-steps"></div>
+<div id="a-a" class="card"></div>
+<div id="a-b" class="card"></div>
+</section>
+
+<section class="tab" id="fair">
+<h2>H2 · Fairness Lab</h2>
+<p class="sub">Build the confusion matrix for two groups, compute the gap in percentage points, then fix the stage where bias entered without breaking something else.</p>
+<div class="steps" id="f-steps"></div>
+<div id="f-body"></div>
+</section>
+
+<section class="tab" id="match">
+<h2>H3 · Matcher Run</h2>
+<p class="sub">A surplus-food matcher supports Ne'ma: it pairs donated items with charities. Inspect the data, run it end to end with checks at each hand-off, compute precision, then handle a new allergen constraint.</p>
+<div class="steps" id="m-steps"></div>
+<div id="m-body"></div>
+</section>
+
+<section class="tab" id="arch">
+<h2>H4 · Architect &amp; Pressure-Test</h2>
+<p class="sub">Plan a signature solution, prototype it with a test log, break it on purpose with hard cases, and add a fallback path.</p>
+<div class="steps" id="p-steps"></div>
+<div id="p-body"></div>
+</section>
+</main>
+<footer>Illustrative scenarios. No real people, names or personal data. Record your numbers on your worksheet. Trust Lab · Grade 12 · Main course · Weeks 5–7. Works offline once loaded.</footer>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var TABS=[['audit','H1','Risk Audit'],['fair','H2','Fairness Lab'],['match','H3','Matcher Run'],['arch','H4','Architect & Pressure-Test']];
+function show(id){
+  if(!TABS.some(function(t){return t[0]===id})) id='audit';
+  TABS.forEach(function(t){$('#'+t[0]).classList.toggle('on',t[0]===id)});
+  [].forEach.call($('#nav').children,function(b){b.classList.toggle('on',b.dataset.id===id)});
+  try{ if(location.hash!=='#'+id) history.replaceState(null,'','#'+id); }catch(e){}
+  window.scrollTo(0,0);
+}
+$('#nav').innerHTML=TABS.map(function(t){return '<button data-id="'+t[0]+'"><span class="n">'+t[1]+'</span>'+t[2]+'</button>'}).join('');
+$('#nav').addEventListener('click',function(e){var b=e.target.closest('button');if(b)show(b.dataset.id)});
+window.addEventListener('hashchange',function(){show(location.hash.slice(1))});
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function r1(x){return Math.round(x*10)/10}
+function f1(x){return r1(x).toFixed(1)}
+function opts(arr,sel){return arr.map(function(x,i){return '<option value="'+i+'"'+(sel===i?' selected':'')+'>'+esc(x)+'</option>'}).join('')}
+function stepBar(el,names,cur,done){
+  el.innerHTML=names.map(function(n,i){return '<button data-i="'+i+'" class="'+(cur===i?'on ':'')+(done&&done[i]?'done':'')+'">'+n+'</button>'}).join('');
+}
+
+/* ================= H1 RISK AUDIT ================= */
+var ST=['Input / data','Features','Model inference','Post-processing','Action'];
+var PV=['Data minimisation','Anonymisation','Pseudonymisation (still personal data)'];
+var LENS=['Bias','Privacy','Societal impact'];
+var RC=[
+{t:'The CV data came mostly from past hires at one large firm. Applicants from smaller employers hardly appear.',o:ST,a:0,e:'Input / data: some groups are under-represented, so the system has little to learn from for them.'},
+{t:'A "years since last job" feature quietly stands in for age or for caring responsibilities.',o:ST,a:1,e:'Features: a feature that acts as a proxy for a protected trait carries bias into every decision.'},
+{t:'The model learned from past shortlisting decisions that were themselves uneven, so it repeats them.',o:ST,a:2,e:'Model inference: it learned a pattern from uneven past decisions.'},
+{t:'A cut-off score of 70 was set without checking the outcomes for each group.',o:ST,a:3,e:'Post-processing: the threshold turns a score into a decision, and nobody checked it group by group.'},
+{t:'A screener built for graduate roles is now used to shortlist for senior engineering roles.',o:ST,a:4,e:'Action: the system is used on a group or purpose it was not built for.'},
+{t:'The screener keeps only skills and years of experience, not names or photos. Which protection is this?',o:PV,a:0,e:'Data minimisation: collect only what the task needs.'},
+{t:'Names are replaced by codes, but a lookup table still links each code to a person. What is this?',o:PV,a:2,e:'Pseudonymisation: the code links back, so it is still personal data.'},
+{t:'All identifiers are removed so a record can never be linked back to a person. What is this?',o:PV,a:1,e:'Anonymisation: there is no way back to the person.'},
+{t:'The screener is accurate, but the training CVs were copied from a website without asking the owners. Which lens finds this?',o:LENS,a:1,e:'Privacy: whose data is used, and how, is the privacy lens.'},
+{t:'Who is affected by the screener but never uses it?',o:['The recruiter who clicks "run"','An applicant whose CV is screened','The developer who built it'],a:1,e:'Applicants are stakeholders: affected without ever operating the system.'}
+];
+var A={step:0,i:0,score:0,streak:0,best:0,done:false,rated:false};
+var IMP=[
+{t:'Qualified applicants in Group A are rejected far more often than in Group B',ev:'Evidence: false-negative rate 37.5% vs 9.1%',who:'Group A applicants',L:2,S:2,neg:true},
+{t:'CV data is reused to train other tools without asking',ev:'Evidence: no consent step in the upload form',who:'All applicants',L:1,S:2,neg:true},
+{t:'Recruiters stop reading rejected CVs',ev:'Evidence: reviewers skipped 9 of 10 rejections last month',who:'Applicants, recruiters',L:2,S:1,neg:true},
+{t:'A rare outage rejects every application for a day',ev:'Evidence: one outage in four years',who:'All applicants',L:0,S:2,neg:true},
+{t:'Shortlisting is slightly slower at peak times',ev:'Evidence: 20 seconds extra at the busiest hour',who:'Recruiters',L:1,S:0,neg:true},
+{t:'Shortlisting time per role falls from two days to two hours',ev:'Evidence: pilot timings',who:'Recruiters, employer',L:2,S:1,neg:false}
+];
+var LV=['Low','Medium','High'];
+function prio(L,S){var p=(L+1)*(S+1);return p>=6?['Fix first','r']:p>=3?['Plan it','y']:['Watch','g']}
+function aSteps(){stepBar($('#a-steps'),['A · Where does it enter?','B · Rate and rank'],A.step);$('#a-a').style.display=A.step===0?'':'none';$('#a-b').style.display=A.step===1?'':'none'}
+$('#a-steps').addEventListener('click',function(e){var b=e.target.closest('button');if(b){A.step=+b.dataset.i;aSteps()}});
+function aMedal(){var s=A.score;return s>=9?'Gold':s>=8?'Silver':s>=6?'Bronze':'–'}
+function aRender(){
+  var c=RC[A.i];
+  var h='<div><span class="stat"><b id="a-score">'+A.score+'</b><span>score</span></span><span class="stat"><b>'+(A.i+1)+'/'+RC.length+'</b><span>case</span></span><span class="stat"><b id="a-streak">'+A.streak+'</b><span>streak</span></span><span class="stat"><b id="a-medal">'+aMedal()+'</b><span>medal (8+ silver)</span></span></div>';
+  h+='<span class="tag">Case '+(A.i+1)+' of '+RC.length+'</span><h3 style="margin-top:8px">'+esc(c.t)+'</h3>';
+  c.o.forEach(function(o,k){h+='<button class="opt" data-k="'+k+'">'+esc(o)+'</button>'});
+  h+='<div class="fb" id="a-fb"></div><div style="margin-top:10px"><button class="btn" id="a-next" style="display:none">Next case</button></div>';
+  $('#a-a').innerHTML=h;A.done=false;
+}
+$('#a-a').addEventListener('click',function(e){
+  var b=e.target.closest('.opt');
+  if(b&&!A.done){
+    A.done=true;var k=+b.dataset.k,c=RC[A.i],ok=k===c.a;
+    [].forEach.call($('#a-a').querySelectorAll('.opt'),function(x){if(+x.dataset.k===c.a)x.classList.add('right')});
+    if(!ok){b.classList.add('wrong');A.streak=0}else{A.score++;A.streak++;A.best=Math.max(A.best,A.streak)}
+    var fb=$('#a-fb');fb.className='fb show';fb.innerHTML=(ok?'<b class="ok-text">Correct. </b>':'<b class="bad-text">Not quite. </b>')+esc(c.e);
+    $('#a-score').textContent=A.score;$('#a-streak').textContent=A.streak;$('#a-medal').textContent=aMedal();
+    var n=$('#a-next');n.style.display='';n.textContent=A.i===RC.length-1?'See result':'Next case';
+  }
+  if(e.target.id==='a-next'){
+    if(A.i===RC.length-1){
+      $('#a-a').innerHTML='<h3>Finished</h3><p class="big">'+A.score+' / '+RC.length+'</p><p>Medal: <b>'+aMedal()+'</b> · best streak '+A.best+'. Write your score on the worksheet, then go to B.</p><button class="btn alt" id="a-again">Play again</button>';
+    }else{A.i++;aRender()}
+  }
+  if(e.target.id==='a-again'){A={step:0,i:0,score:0,streak:0,best:0,done:false,rated:false};aRender()}
+});
+function aB(){
+  var h='<h3>B · Rate each risk, then rank by priority</h3><p class="note">Likelihood = how often it is expected. Severity = how much harm if it happens. Priority = likelihood × severity (Low 1, Medium 2, High 3). The worst imaginable harm is not always first.</p><div style="overflow-x:auto"><table><tr><th>Risk and evidence</th><th>Affects</th><th class="c">Likelihood</th><th class="c">Severity</th><th class="c">Priority</th></tr>';
+  IMP.forEach(function(m,i){h+='<tr><td>'+esc(m.t)+(m.neg?'':' <span class="tag g">benefit</span>')+'<br><span class="note">'+esc(m.ev)+'</span></td><td>'+esc(m.who)+'</td><td class="c"><select data-f="L" data-i="'+i+'"><option value="">?</option>'+opts(LV)+'</select></td><td class="c"><select data-f="S" data-i="'+i+'"><option value="">?</option>'+opts(LV)+'</select></td><td class="c" id="a-p'+i+'">–</td></tr>'});
+  h+='</table></div><p><button class="btn" id="a-check">Check my ratings</button> <span id="a-res" style="margin-left:8px;font-weight:700"></span></p><div class="fb" id="a-bfb"></div>';
+  $('#a-b').innerHTML=h;
+}
+$('#a-b').addEventListener('click',function(e){
+  if(e.target.id!=='a-check')return;
+  var sel=document.querySelectorAll('#a-b select'),v={},ok=0,all=true,miss=[];
+  [].forEach.call(sel,function(s){var i=s.dataset.i;v[i]=v[i]||{};v[i][s.dataset.f]=s.value===''?null:+s.value});
+  IMP.forEach(function(m,i){
+    var x=v[i];if(x.L===null||x.S===null){all=false;return}
+    var good=x.L===m.L&&x.S===m.S;if(good)ok++;else miss.push((i+1)+') expected '+LV[m.L]+' likelihood, '+LV[m.S]+' severity');
+    var p=m.neg?prio(x.L,x.S):['Protect it','t'];
+    $('#a-p'+i).innerHTML='<span class="tag '+p[1]+'">'+p[0]+'</span>';
+  });
+  if(!all){$('#a-res').textContent='Rate every row first.';return}
+  $('#a-res').textContent=ok+' / '+IMP.length+' match the expected rating';
+  var fb=$('#a-bfb');fb.className='fb show';
+  fb.innerHTML=miss.length?'<b>Compare:</b> '+miss.join('; ')+'. Your reasons may differ; defend them in one sentence on your worksheet.':'<b class="ok-text">All six match.</b> Risk 1 is both likely and severe: mitigate it first. The rare outage (risk 4) is severe but unlikely, so it is "Plan it", not "Fix first".';
+});
+aSteps();aRender();aB();
+
+/* ================= H2 FAIRNESS LAB ================= */
+var F={step:0,cfg:{rb:0,proxy:false,th:0,disc:false},done:{}};
+function fairModel(c){
+  var fnA=Math.max(2,21-5*c.rb-(c.proxy?4:0)-3*c.th);
+  var fpA=Math.max(2,10-c.rb+2*c.th);
+  var fnB=4+(c.proxy?1:0),fpB=9+(c.proxy?1:0);
+  function mk(q,n,fn,fp){return {tp:q-fn,fp:fp,fn:fn,tn:n-fp,q:q,n:n,fnr:r1(100*fn/q),fpr:r1(100*fp/n)}}
+  var a=mk(56,94,fnA,fpA),b=mk(44,106,fnB,fpB);
+  var acc=r1(100*(a.tp+a.tn+b.tp+b.tn)/300);
+  var fng=r1(Math.abs(a.fnr-b.fnr)),fpg=r1(Math.abs(a.fpr-b.fpr));
+  var stars=(fng<=10?1:0)+(fng<=5?1:0)+((fng<=5&&fpg<=5&&acc>=85)?1:0);
+  return {A:a,B:b,acc:acc,fng:fng,fpg:fpg,stars:stars};
+}
+function mxHtml(name,m){
+  return '<div class="mx"><table><tr><th>'+name+'</th><th>Actually qualified</th><th>Actually not</th></tr><tr><td>Predicted: shortlist</td><td class="tp">'+m.tp+' (TP)</td><td class="fp">'+m.fp+' (FP)</td></tr><tr><td>Predicted: reject</td><td class="fn">'+m.fn+' (FN)</td><td class="tn">'+m.tn+' (TN)</td></tr></table></div>';
+}
+function fSteps(){
+  stepBar($('#f-steps'),['1 · Build and compute','2 · Fix the stage','3 · Govern it'],F.step,F.done);
+  if(F.step===0){
+    var m=fairModel({rb:0,proxy:false,th:0});
+    $('#f-body').innerHTML='<div class="card"><h3>1 · The screener today</h3><p>An anonymised audit of 150 applicants per group. Read each matrix, then compute the rates yourself. FN rate = FN ÷ (FN + TP). FP rate = FP ÷ (FP + TN).</p>'+mxHtml('Group A',m.A)+mxHtml('Group B',m.B)+
+    '<table style="max-width:560px"><tr><th>Rate</th><th class="c">Group A</th><th class="c">Group B</th><th class="c">Gap (pp)</th></tr><tr><td>FN rate (%)</td><td class="c"><input type="number" step="0.1" id="f-i1"></td><td class="c"><input type="number" step="0.1" id="f-i2"></td><td class="c"><input type="number" step="0.1" id="f-i3"></td></tr><tr><td>FP rate (%)</td><td class="c"><input type="number" step="0.1" id="f-i4"></td><td class="c"><input type="number" step="0.1" id="f-i5"></td><td class="c"><input type="number" step="0.1" id="f-i6"></td></tr></table>'+
+    '<p><button class="btn" id="f-c1">Check my numbers</button></p><div class="fb" id="f-fb1"></div></div>';
+  }else if(F.step===1){
+    $('#f-body').innerHTML='<div class="card"><h3>2 · Fix the stage where bias entered</h3><p class="note">Goal: FN gap 5 pp or less, FP gap 5 pp or less, overall accuracy 85% or more. A real mitigation changes a stage. A disclaimer changes nothing.</p>'+
+    '<div class="lev"><label>Input / data: rebalance training data (add Group A examples)</label><select id="f-rb">'+opts(['None','One round','Two rounds'],F.cfg.rb)+'</select></div>'+
+    '<div class="lev"><label><input type="checkbox" id="f-px"'+(F.cfg.proxy?' checked':'')+'> Features: drop the "years since last job" proxy feature</label></div>'+
+    '<div class="lev"><label>Post-processing: lower the cut-off for Group A (after checking each group)</label><select id="f-th">'+opts(['0 steps','1 step','2 steps','3 steps','4 steps','5 steps'],F.cfg.th)+'</select></div>'+
+    '<div class="lev"><label><input type="checkbox" id="f-dc"'+(F.cfg.disc?' checked':'')+'> Add a disclaimer: "results may be biased"</label></div></div><div class="card" id="f-out"></div>';
+    fOut();
+  }else{
+    $('#f-body').innerHTML='<div class="card"><h3>3 · Governance: who is answerable?</h3><p class="note">No fix removes a risk completely. Name what is left, who monitors it, and how an applicant can challenge a bad decision.</p>'+
+    '<div class="lev"><label>Accountable owner</label><select id="f-ow"><option value="">choose</option>'+opts(['Head of Recruitment (named role)','Data protection officer (named role)','The algorithm','Nobody: the model is accurate'])+'</select></div>'+
+    '<div class="lev"><label>Residual risk</label><select id="f-rr"><option value="">choose</option>'+opts(['Some false negatives remain; the gap is monitored every month','No residual risk remains','Fairness is no longer a concern after launch'])+'</select></div>'+
+    '<div class="lev"><label>Appeal route</label><select id="f-ap"><option value="">choose</option>'+opts(['A rejected applicant can ask for a human re-review','No appeal is needed because accuracy is high','Applicants may email the developer'])+'</select></div>'+
+    '<p><button class="btn" id="f-c3">Check my governance</button></p><div class="fb" id="f-fb3"></div></div>';
+  }
+}
+function fOut(){
+  var m=fairModel(F.cfg),c=F.cfg;
+  var gc=m.fng<=5?'good':m.fng<=10?'warn':'bad',pc=m.fpg<=5?'good':m.fpg<=10?'warn':'bad',ac=m.acc>=85?'good':'warn';
+  var h='<h3>Live results</h3>'+mxHtml('Group A',m.A)+mxHtml('Group B',m.B)+
+  '<div><span class="stat '+gc+'"><b>'+f1(m.fng)+' pp</b><span>FN gap</span></span><span class="stat '+pc+'"><b>'+f1(m.fpg)+' pp</b><span>FP gap</span></span><span class="stat '+ac+'"><b>'+f1(m.acc)+'%</b><span>overall accuracy</span></span></div>'+
+  '<table style="max-width:560px"><tr><th>Rate</th><th class="c">Group A</th><th class="c">Group B</th></tr><tr><td>FN rate</td><td class="c">'+f1(m.A.fnr)+'%</td><td class="c">'+f1(m.B.fnr)+'%</td></tr><tr><td>FP rate</td><td class="c">'+f1(m.A.fpr)+'%</td><td class="c">'+f1(m.B.fpr)+'%</td></tr></table>'+
+  '<p><span class="stars">'+[0,1,2].map(function(i){return '<span class="'+(i<m.stars?'':'off')+'">★</span>'}).join('')+'</span> <span class="note">★ FN gap ≤ 10 pp · ★★ FN gap ≤ 5 pp · ★★★ FN gap ≤ 5 pp AND FP gap ≤ 5 pp AND accuracy ≥ 85%</span></p>';
+  var tips=[];
+  if(c.disc&&!c.rb&&!c.proxy&&!c.th)tips.push('A disclaimer changed none of the numbers. A mitigation must change a stage.');
+  if(c.th>=3&&m.fpg>5)tips.push('<b>Trade-off:</b> lowering the cut-off for Group A cut its FN rate but raised its FP rate. You closed one gap and opened another.');
+  if(m.stars===3)tips.push('<b class="ok-text">Three stars.</b> Both gaps are small and accuracy holds. Write your settings on the worksheet.');
+  h+='<div class="fb '+(tips.length?'show':'')+'">'+tips.join('<br>')+'</div>';
+  $('#f-out').innerHTML=h;
+}
+$('#f-steps').addEventListener('click',function(e){var b=e.target.closest('button');if(b){F.step=+b.dataset.i;fSteps()}});
+$('#f-body').addEventListener('change',function(e){
+  var t=e.target.id;
+  if(t==='f-rb')F.cfg.rb=+e.target.value;
+  if(t==='f-px')F.cfg.proxy=e.target.checked;
+  if(t==='f-th')F.cfg.th=+e.target.value;
+  if(t==='f-dc')F.cfg.disc=e.target.checked;
+  if(['f-rb','f-px','f-th','f-dc'].indexOf(t)>-1)fOut();
+});
+$('#f-body').addEventListener('click',function(e){
+  if(e.target.id==='f-c1'){
+    var m=fairModel({rb:0,proxy:false,th:0});
+    var exp=[m.A.fnr,m.B.fnr,r1(m.A.fnr-m.B.fnr),m.A.fpr,m.B.fpr,r1(m.A.fpr-m.B.fpr)],bad=[];
+    for(var i=0;i<6;i++){var v=parseFloat($('#f-i'+(i+1)).value);if(isNaN(v)||Math.abs(v-exp[i])>0.2)bad.push(i+1)}
+    var fb=$('#f-fb1');fb.className='fb show';
+    fb.innerHTML=bad.length?'<b class="bad-text">Check these boxes: '+bad.join(', ')+'.</b> FN rate A = 21 ÷ (21 + 35) = 21 ÷ 56. Use FN ÷ (FN + TP) for the FN rate and FP ÷ (FP + TN) for the FP rate, then subtract the smaller from the larger.':'<b class="ok-text">All six correct.</b> FN gap '+f1(exp[2])+' pp: qualified Group A applicants are rejected far more often. Now fix it in step 2.';
+    if(!bad.length)F.done[0]=true;
+  }
+  if(e.target.id==='f-c3'){
+    var o=$('#f-ow').value,r=$('#f-rr').value,a=$('#f-ap').value,msg=[];
+    if(o===''||r===''||a===''){msg.push('Choose an owner, a residual risk and an appeal route.')}
+    else{
+      if(+o>1)msg.push('A risk needs a named human owner, not "'+['','','the algorithm','nobody'][+o]+'".');
+      if(+r>0)msg.push('Some risk always remains after a mitigation; name it and monitor it.');
+      if(+a>0)msg.push('Choose a real appeal route: a human re-review by a named office.');
+    }
+    var fb=$('#f-fb3');fb.className='fb show';
+    fb.innerHTML=msg.length?msg.join('<br>'):'<b class="ok-text">Good governance rule.</b> Write it on your worksheet: "The Head of Recruitment is accountable for monitoring the false-negative gap every month because a residual gap remains, and any rejected applicant can ask for a human re-review."';
+    if(!msg.length)F.done[2]=true;
+  }
+});
+fSteps();
+window.__lab={RC:RC,IMP:IMP,fairModel:fairModel,F:F};
+
+/* ================= H3 MATCHER RUN ================= */
+var ITEMS=[
+['Tomatoes, 20 kg crate','Produce'],['Cucumbers, 15 kg','Produce'],['Mixed tray (no label)',''],['Peanut cookies, 40 packs (contains peanuts)','Packaged'],
+['Apples, 25 kg','Produce'],['Yoghurt tubs, 1 day left','Dairy'],['Lettuce, 30 heads','Produce'],['Bananas, 20 kg','Produce'],
+['Frozen chicken pieces, 10 kg','Bakery'],['Dates, 12 boxes','Packaged'],['Sesame bars, 60 packs (contains sesame)','Packaged'],['Carrots, 25 kg','Produce'],
+['Milk cartons, 48','Dairy'],['Rice, 5 kg bags','Dairy'],['Oranges, 30 kg','Produce'],['Pitta bread, 80','Bakery'],
+['Bread rolls, expired yesterday','Bakery'],['Cheese slices, 30 packs','Dairy'],['Croissants, 50','Bakery'],['Potatoes, 40 kg','Produce']
+];
+var FLAW={2:'D',8:'D',13:'D',5:'E',16:'E',3:'A',10:'A'};
+var M={step:0,cfg:{fix:false,label:false,cIn:false,cExp:false,cHum:false,con:false},sel:{},done:{}};
+function matcherModel(c){
+  var removed=0,flawed=0,byIn=0,byExp=0,byHum=0,unsafe=0,i;
+  for(i=0;i<20;i++){
+    var f=FLAW[i];
+    if(f==='D'&&!c.fix){if(c.cIn){removed++;byIn++}else flawed++}
+    if(f==='E'){if(c.cExp){removed++;byExp++}else flawed++}
+    if(f==='A'&&c.con){if(c.label&&c.cHum){removed++;byHum++}else{flawed++;unsafe++}}
+  }
+  var sug=20-removed,cor=sug-flawed;
+  return {sug:sug,cor:cor,wrong:flawed,prec:r1(100*cor/sug),cov:r1(100*cor/20),byIn:byIn,byExp:byExp,byHum:byHum,unsafe:unsafe,
+    t:{prec:100*cor/sug>=90,cov:cor>=16,safe:unsafe===0,log:!!(c.cIn&&c.cExp&&c.cHum)}};
+}
+function mLog(c){
+  var m=matcherModel(c),dflaw=c.fix?0:3;
+  var r1x=c.cIn?(m.byIn?['FAIL','fail',m.byIn+' item(s) returned for correction']:['PASS','pass','0 flagged']):['UNVERIFIED','warn','nothing checked'];
+  var r2x=c.cExp?['PASS','pass',m.byExp+' item(s) rejected: fail the date rule']:['UNVERIFIED','warn','nothing checked'];
+  var r3x=c.cHum?(c.con?(c.label?['PASS','pass',m.byHum+' item(s) sent to the coordinator']:['WARN','warn','no allergen label to check against']):['PASS','pass','0 sensitive items (constraint off)']):['UNVERIFIED','warn','nothing checked'];
+  return [
+   ['1 Input → Matcher',c.cIn?'Fields complete and category matches the item':'—','Item list + category sheet',r1x],
+   ['2 Matcher → Plan',c.cExp?'Days left ≥ 3 against the rule sheet':'—','Expiry rule sheet',r2x],
+   ['3 Plan → Action',c.cHum?'Human signs off sensitive pairings':'—','Allergen labels + coordinator',r3x]];
+}
+function mSteps(){stepBar($('#m-steps'),['1 · Inspect','2 · Run and log','3 · Compute precision','4 · New constraint','5 · Swap and reproduce'],M.step,M.done);mBody()}
+function mSettings(withCon){
+  var c=M.cfg;
+  return '<div class="card"><h3>Settings</h3><div class="chips" style="gap:14px">'+
+  '<label class="chk"><input type="checkbox" data-k="fix"'+(c.fix?' checked':'')+'> Fix the data at the source (fill category, correct labels)</label>'+
+  '<label class="chk"><input type="checkbox" data-k="cIn"'+(c.cIn?' checked':'')+'> Check 1: validate the input before matching</label>'+
+  '<label class="chk"><input type="checkbox" data-k="cExp"'+(c.cExp?' checked':'')+'> Check 2: expiry against the rule sheet</label>'+
+  '<label class="chk"><input type="checkbox" data-k="cHum"'+(c.cHum?' checked':'')+'> Check 3: human sign-off on sensitive pairings</label>'+
+  (withCon?'<label class="chk"><input type="checkbox" data-k="label"'+(c.label?' checked':'')+'> Add an allergen label to the input (needed before Check 3 can work)</label><label class="chk"><b><input type="checkbox" data-k="con"'+(c.con?' checked':'')+'> NEW CONSTRAINT ON: two items contain allergens</b></label>':'')+
+  '</div></div>';
+}
+function mResults(){
+  var c=M.cfg,m=matcherModel(c),log=mLog(c);
+  var h='<div class="card"><h3>Results</h3><span class="stat"><b>'+m.sug+'</b><span>matches suggested</span></span><span class="stat"><b>'+m.cor+'</b><span>correct</span></span><span class="stat '+(m.t.prec?'good':'warn')+'"><b>'+f1(m.prec)+'%</b><span>precision</span></span><span class="stat '+(m.t.cov?'good':'warn')+'"><b>'+f1(m.cov)+'%</b><span>coverage (correct of 20)</span></span>'+(c.con?'<span class="stat '+(m.unsafe?'bad':'good')+'"><b>'+m.unsafe+'</b><span>allergen items delivered</span></span>':'')+
+  '<p class="note">Targets: precision ≥ 90% · coverage ≥ 80% (16 correct of 20) · no allergen item delivered · all three hand-offs checked.</p>'+
+  '<table class="log"><tr><th>Hand-off</th><th>What I checked</th><th>Trusted source</th><th>Result</th></tr>'+log.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td><td class="'+r[3][1]+'">'+r[3][0]+': '+esc(r[3][2])+'</td></tr>'}).join('')+'</table>'+
+  '<p class="note">Copy this table into your verification log. A row marked UNVERIFIED means the hand-off was not checked.</p></div>';
+  return h;
+}
+function mBody(){
+  var c=M.cfg,h='';
+  if(M.step===0){
+    h='<div class="card"><h3>1 · Inspect the data before you trust it</h3><p>Twenty donated items. Tap the items with a <b>data problem</b> (missing value or wrong label). Expiry is checked later, not here.</p><div class="item-grid">'+
+    ITEMS.map(function(it,i){return '<button class="item'+(M.sel[i]?' sel':'')+'" data-i="'+i+'"><b>'+esc(it[0])+'</b><br><span class="note">Category: '+(it[1]?esc(it[1]):'(blank)')+'</span></button>'}).join('')+
+    '</div><p>Representativeness: which statement is true?</p><select id="m-rep">'+'<option value="">choose</option>'+opts(['The set covers every kind of surplus food fairly','Produce is the largest group (8 of 20) and there is no frozen or ready-meal category even though frozen food appears','Representativeness does not matter for matching'])+'</select><p><button class="btn" id="m-c1">Check my inspection</button></p><div class="fb" id="m-fb1"></div></div>';
+  }else if(M.step===1){
+    h='<p class="note">Constraint off in this step. Switch checks on one at a time and watch the log and the numbers.</p>'+mSettings(false)+mResults();
+  }else if(M.step===2){
+    var m=matcherModel(c);
+    h='<div class="card"><h3>3 · Compute precision from the raw counts</h3><p>Use your current settings from step 2. Precision = correct matches ÷ total matches suggested.</p><div class="lev"><label>Correct</label><input type="number" id="m-pc"><label>Total suggested</label><input type="number" id="m-pt"><label>Precision (%)</label><input type="number" step="0.1" id="m-pp"></div><p><button class="btn" id="m-c3">Check</button></p><div class="fb" id="m-fb3"></div><p class="note">Reminder: 15 correct out of 20 suggested is 15 ÷ 20 = 75%.</p></div>'+mSettings(false)+mResults();
+  }else if(M.step===3){
+    h='<div class="card"><h3>4 · A constraint ripples upstream</h3><p>Two items contain allergens (peanuts, sesame). Switch the constraint on, see the damage, then adapt. Which stages must change?</p>'+
+    '<label class="chk"><input type="checkbox" class="m-st"> Input: add an allergen label</label><label class="chk"><input type="checkbox" class="m-st"> Matching: avoid unsafe charities</label><label class="chk"><input type="checkbox" class="m-st"> Evaluation: a new check for allergen items</label><label class="chk"><input type="checkbox" class="m-st"> Nothing: add a note at the end</label><p><button class="btn alt" id="m-c4">Check which stages</button></p><div class="fb" id="m-fb4"></div></div>'+mSettings(true)+mResults();
+  }else{
+    var code=mCode(c);
+    h='<div class="card"><h3>5 · Swap and reproduce</h3><p>A log is reproducible when another pair can re-run it and get the same numbers.</p><p>Your settings code: <span class="code" id="m-mycode">'+code+'</span></p><p>Enter your partner\'s code: <input type="text" id="m-pcode" placeholder="e.g. F1L1I0E1H1C1" style="max-width:220px"> <button class="btn" id="m-load">Reproduce</button></p><div id="m-rep2"></div></div>';
+  }
+  $('#m-body').innerHTML=h;
+}
+function mCode(c){return 'F'+(+c.fix)+'L'+(+c.label)+'I'+(+c.cIn)+'E'+(+c.cExp)+'H'+(+c.cHum)+'C'+(+c.con)}
+function mDecode(s){
+  var m=/^F([01])L([01])I([01])E([01])H([01])C([01])$/.exec(String(s).trim().toUpperCase());
+  if(!m)return null;
+  return {fix:m[1]==='1',label:m[2]==='1',cIn:m[3]==='1',cExp:m[4]==='1',cHum:m[5]==='1',con:m[6]==='1'};
+}
+$('#m-steps').addEventListener('click',function(e){var b=e.target.closest('button');if(b){M.step=+b.dataset.i;if(M.step<3)M.cfg.con=false;mSteps()}});
+$('#m-body').addEventListener('click',function(e){
+  var it=e.target.closest('.item');
+  if(it){var i=+it.dataset.i;M.sel[i]=!M.sel[i];it.classList.toggle('sel',!!M.sel[i]);return}
+  if(e.target.id==='m-c1'){
+    var chosen=Object.keys(M.sel).filter(function(k){return M.sel[k]}).map(Number),good=chosen.filter(function(k){return FLAW[k]==='D'}),wrong=chosen.filter(function(k){return FLAW[k]!=='D'});
+    var rep=$('#m-rep').value,fb=$('#m-fb1');fb.className='fb show';
+    var ok=good.length===3&&!wrong.length&&rep==='1';
+    fb.innerHTML=(ok?'<b class="ok-text">Correct.</b> ':'<b class="bad-text">Not yet.</b> ')+'You found '+good.length+' of 3 data problems'+(wrong.length?' and flagged '+wrong.length+' item(s) that are not data problems':'')+'. The three are the unlabelled tray, the frozen chicken filed under Bakery, and the rice filed under Dairy. '+(rep==='1'?'Representativeness answer correct.':'Look again at the category counts: produce is the biggest group and there is no frozen category.');
+    if(ok)M.done[0]=true;
+  }
+  if(e.target.id==='m-c3'){
+    var m=matcherModel(M.cfg),pc=parseFloat($('#m-pc').value),pt=parseFloat($('#m-pt').value),pp=parseFloat($('#m-pp').value),fb=$('#m-fb3');
+    fb.className='fb show';
+    var ok=pc===m.cor&&pt===m.sug&&Math.abs(pp-m.prec)<=0.2;
+    fb.innerHTML=ok?'<b class="ok-text">Correct.</b> '+m.cor+' ÷ '+m.sug+' = '+f1(m.prec)+'%. A metric you computed yourself is evidence.':'<b class="bad-text">Not yet.</b> Read the Results card: count the correct matches and the total suggested, then divide correct by total.';
+    if(ok)M.done[2]=true;
+  }
+  if(e.target.id==='m-c4'){
+    var bx=[].slice.call(document.querySelectorAll('.m-st')).map(function(x){return x.checked}),fb=$('#m-fb4');
+    fb.className='fb show';
+    var ok=bx[0]&&bx[1]&&bx[2]&&!bx[3];
+    fb.innerHTML=ok?'<b class="ok-text">Right.</b> A constraint changes the input labels, the matching and the evaluation check. Now switch on the constraint, the allergen label and Check 3, and re-run.':'<b class="bad-text">Trace it upstream.</b> Tick input, matching and evaluation. A note at the end does not protect anyone.';
+    if(ok)M.done[3]=true;
+  }
+  if(e.target.id==='m-load'){
+    var cfg=mDecode($('#m-pcode').value),box=$('#m-rep2');
+    if(!cfg){box.innerHTML='<div class="fb show">Code not recognised. It looks like F1L1I0E1H1C1.</div>';return}
+    var m=matcherModel(cfg);
+    box.innerHTML='<div class="card"><b>Partner run reproduced:</b> '+m.sug+' suggested, '+m.cor+' correct, precision '+f1(m.prec)+'%, coverage '+f1(m.cov)+'%'+(cfg.con?', allergen items delivered '+m.unsafe:'')+'. Targets met: '+(+m.t.prec+ +m.t.cov+ +m.t.safe+ +m.t.log)+' of 4. Compare with the numbers on their worksheet.</div>';
+    M.done[4]=true;
+  }
+});
+$('#m-body').addEventListener('change',function(e){
+  var k=e.target.dataset&&e.target.dataset.k;
+  if(!k)return;
+  M.cfg[k]=e.target.checked;
+  if(k==='label'&&e.target.checked&&!M.cfg.con){}
+  mBody();
+});
+mSteps();
+window.__lab.matcherModel=matcherModel;window.__lab.mLog=mLog;window.__lab.M=M;window.__lab.mDecode=mDecode;window.__lab.mCode=mCode;
+
+/* ================= H4 ARCHITECT & PRESSURE-TEST ================= */
+var SOL=[
+{n:'Lost-property matcher',goal:'match item descriptions to shelf codes so owners are found faster',who:'students and staff'},
+{n:'Canteen queue planner',goal:'plan serving times from non-personal queue counts to cut waiting',who:'students and canteen staff'},
+{n:'Recycling-bin router',goal:'suggest the right bin for an item from its description',who:'students and cleaners'},
+{n:'Library return sorter',goal:'sort returned books to shelves from catalogue codes',who:'librarians'}
+];
+var CRIT=['It works well','Users like it','At least 9 of 10 test outputs pass the check against the trusted source','It is fast'];
+var RISKS=['Missing or odd input slips through','A confident wrong output is accepted','People stop checking the AI'];
+var MITS=['Input check','AI-output check against a trusted source','Human sign-off'];
+var OWN=['Project lead (named role)','Teacher supervisor (named role)','Nobody','The AI tool'];
+var HARD=[
+{k:'missing',t:'A required input is missing',catchBy:'c1'},
+{k:'edge',t:'An extreme value arrives (edge case)',catchBy:'c1'},
+{k:'ambig',t:'An ambiguous request the AI step guesses at',catchBy:'c2'},
+{k:'conf',t:'A confident answer that is subtly wrong',catchBy:'c3'}
+];
+var CNAME={c1:'Input check',c2:'AI-output check',c3:'Human sign-off'};
+var P={step:0,sol:0,who:0,c1:false,c2:false,c3:false,extra:false,crit:-1,risk:-1,mit:-1,own:-1,
+  fb:{trig:-1,act:-1,own:-1},log:[]};
+var TRIG=['Input check fails','AI-output check fails','Human sign-off declines','Any check fails','Nothing'];
+var TRIGK=['c1','c2','c3','any','none'];
+var ACT=['Route to a named person to decide','Return a safe default message and log it','Send the output anyway with a disclaimer'];
+function pSteps(){stepBar($('#p-steps'),['1 · Architect','2 · Prototype','3 · Pressure-test','4 · Fallback and verdict'],P.step);pBody()}
+function pSteps2(){return 4+(+P.c1)+(+P.c2)+(+P.c3)+(+P.extra)}
+function fbOk(pl){
+  var f=pl.fb;
+  return {covers:function(k){var t=TRIGK[f.trig];return t==='any'||t===k},
+    actSafe:f.act===0||f.act===1,ownOk:f.own===0||f.own===1,set:f.trig>-1&&f.act>-1&&f.own>-1};
+}
+function pressureRun(pl){
+  var fo=fbOk(pl),out=HARD.map(function(h){
+    var caught=!!pl[h.catchBy],res;
+    if(!caught)res='wrong';
+    else if(fo.set&&fo.covers(h.catchBy)){res=(fo.actSafe&&fo.ownOk)?'routed':'wrong'}
+    else res='dropped';
+    return {k:h.k,t:h.t,caught:caught,res:res,by:h.catchBy};
+  });
+  var c={wrong:0,dropped:0,routed:0};out.forEach(function(o){c[o.res]++});
+  var steps=4+(+pl.c1)+(+pl.c2)+(+pl.c3)+(+pl.extra);
+  var planOk=pl.crit===2&&pl.risk>-1&&pl.mit>-1&&pl.own>-1&&pl.own<2;
+  return {out:out,wrong:c.wrong,dropped:c.dropped,routed:c.routed,steps:steps,ready:c.wrong===0&&c.dropped===0&&steps<=7&&planOk};
+}
+function flowH(){
+  var n=[['Input',''],['Input check','c1'],['AI step','ai'],['AI-output check','c2'],['Plan',''],['Human sign-off','c3'],['Action','']];
+  return '<div class="flow">'+n.filter(function(x){return !x[1]||x[1]==='ai'||P[x[1]]}).map(function(x,i,a){return '<div class="node'+(x[1]&&x[1]!=='ai'?' chk ok':'')+(x[1]==='ai'?' weak':'')+'">'+x[0]+'</div>'+(i<a.length-1?'<span class="arrow">→</span>':'')}).join('')+'</div>';
+}
+function pBody(){
+  var h='',s=SOL[P.sol];
+  if(P.step===0){
+    h='<div class="card"><h3>1 · Choose a solution and write the goal</h3><select id="p-sol">'+opts(SOL.map(function(x){return x.n}),P.sol)+'</select><p>Goal: this system helps <b>'+esc(s.who)+'</b> to <b>'+esc(s.goal)+'</b>, with no personal data.</p></div>'+
+    '<div class="card"><h3>Structure and checks (step budget: 7)</h3>'+flowH()+
+    '<label class="chk"><input type="checkbox" data-k="c1"'+(P.c1?' checked':'')+'> Input check: is the input complete and in range? (+1 step)</label>'+
+    '<label class="chk"><input type="checkbox" data-k="c2"'+(P.c2?' checked':'')+'> AI-output check against a trusted source (+1 step)</label>'+
+    '<label class="chk"><input type="checkbox" data-k="c3"'+(P.c3?' checked':'')+'> Human sign-off before the action (+1 step)</label>'+
+    '<label class="chk"><input type="checkbox" data-k="extra"'+(P.extra?' checked':'')+'> Auto-summary step for polish (+1 step)</label>'+
+    '<p><span class="stat '+(pSteps2()<=7?'good':'bad')+'"><b>'+pSteps2()+' / 7</b><span>steps</span></span></p></div>'+
+    '<div class="card"><h3>Success criterion, risk, mitigation, owner</h3>'+
+    '<div class="lev"><label>Success criterion</label><select id="p-cr"><option value="">choose</option>'+opts(CRIT,P.crit)+'</select></div>'+
+    '<div class="lev"><label>Specific risk</label><select id="p-rk"><option value="">choose</option>'+opts(RISKS,P.risk)+'</select></div>'+
+    '<div class="lev"><label>Mitigation built into the design</label><select id="p-mt"><option value="">choose</option>'+opts(MITS,P.mit)+'</select></div>'+
+    '<div class="lev"><label>Owner</label><select id="p-ow"><option value="">choose</option>'+opts(OWN,P.own)+'</select></div>'+
+    '<p><button class="btn" id="p-c1">Check my plan</button></p><div class="fb" id="p-fb1"></div></div>';
+  }else if(P.step===1){
+    var rows=[['Input','one real, non-personal '+(P.sol===1?'queue count':'item description'),'received']];
+    if(P.c1)rows.push(['Input check','complete and in range','PASS']);
+    rows.push(['AI step','a clear output','output produced']);
+    if(P.c2)rows.push(['AI-output check','matches the trusted source','PASS']);
+    rows.push(['Plan','assembled from the output','plan ready']);
+    if(P.c3)rows.push(['Human sign-off','approved by the owner','PASS']);
+    rows.push(['Action','delivered','done']);
+    h='<div class="card"><h3>2 · Prototype: walk one normal input through</h3>'+flowH()+'<table class="log"><tr><th>Step</th><th>Predicted</th><th>Actual</th><th>Pass / fail</th></tr>'+rows.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td><td class="pass">PASS</td></tr>'}).join('')+'</table><p class="note">A normal input passes everything. That proves little. Steps with no check after them are unproven until you stress them.</p>'+
+    (!P.c2?'<div class="fb show">Unproven: the AI step has no check after it.</div>':'')+'</div>';
+  }else if(P.step===2){
+    h='<div class="card"><h3>3 · Break it on purpose</h3><p>Push each hard case through your current plan. Record where it breaks.</p>'+flowH()+'<div class="chips">'+HARD.map(function(x,i){return '<button class="btn alt" data-h="'+i+'">'+esc(x.t)+'</button>'}).join('')+'</div>'+
+    '<table class="log" id="p-log"><tr><th>Hard case</th><th>Where it breaks</th><th>Result</th></tr>'+P.log.map(function(r){return '<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td><td class="'+r[3]+'">'+esc(r[2])+'</td></tr>'}).join('')+'</table><p class="note">Go back to step 1 to add a missing check, then try again. Caught but with no fallback means the system stops and nobody is told: that is dropped.</p></div>';
+  }else{
+    var pr=pressureRun(P);
+    h='<div class="card"><h3>4 · Design the fallback path</h3><p class="note">What does the system do the moment a check fails, instead of passing on a wrong output?</p>'+
+    '<div class="lev"><label>Trigger</label><select id="p-ft"><option value="">choose</option>'+opts(TRIG,P.fb.trig)+'</select></div>'+
+    '<div class="lev"><label>Action</label><select id="p-fa"><option value="">choose</option>'+opts(ACT,P.fb.act)+'</select></div>'+
+    '<div class="lev"><label>Owner</label><select id="p-fo"><option value="">choose</option>'+opts(OWN,P.fb.own)+'</select></div></div>'+
+    '<div class="card"><h3>Verdict: all four hard cases</h3><span class="stat '+(pr.wrong?'bad':'good')+'"><b>'+pr.wrong+'</b><span>wrong delivered</span></span><span class="stat '+(pr.dropped?'bad':'good')+'"><b>'+pr.dropped+'</b><span>dropped, nobody told</span></span><span class="stat"><b>'+pr.routed+'</b><span>routed to a person</span></span><span class="stat '+(pr.steps<=7?'good':'bad')+'"><b>'+pr.steps+'/7</b><span>steps</span></span>'+
+    '<table class="log"><tr><th>Hard case</th><th>Result</th></tr>'+pr.out.map(function(o){return '<tr><td>'+esc(o.t)+'</td><td class="'+(o.res==='routed'?'pass':o.res==='wrong'?'fail':'warn')+'">'+(o.res==='routed'?'caught and routed':o.res==='wrong'?'WRONG output delivered':'caught but dropped')+'</td></tr>'}).join('')+'</table>'+
+    '<div class="fb show">'+(pr.ready?'<b class="ok-text">Build-ready.</b> Zero wrong, zero dropped, within 7 steps, with a measurable criterion and a named owner.':'<b class="bad-text">Not build-ready yet.</b> '+pVerdict(pr))+'</div></div>';
+  }
+  $('#p-body').innerHTML=h;
+}
+function pVerdict(pr){
+  var m=[];
+  if(pr.wrong)m.push('A hard case reaches the user: add the missing check, or make the fallback safe with a named owner.');
+  if(pr.dropped)m.push('A check catches a case but nothing happens next: add a fallback that covers that check.');
+  if(pr.steps>7)m.push('Over the 7-step budget: remove a step that adds no safety.');
+  if(!(P.crit===2&&P.risk>-1&&P.mit>-1&&P.own>-1&&P.own<2))m.push('Finish step 1: a measurable criterion, a risk, a mitigation and a human owner.');
+  return m.join(' ');
+}
+$('#p-steps').addEventListener('click',function(e){var b=e.target.closest('button');if(b){P.step=+b.dataset.i;pSteps()}});
+$('#p-body').addEventListener('change',function(e){
+  var t=e.target,k=t.dataset&&t.dataset.k;
+  if(k){P[k]=t.checked;pBody();return}
+  if(t.id==='p-sol'){P.sol=+t.value;pBody()}
+  if(t.id==='p-cr')P.crit=t.value===''?-1:+t.value;
+  if(t.id==='p-rk')P.risk=t.value===''?-1:+t.value;
+  if(t.id==='p-mt')P.mit=t.value===''?-1:+t.value;
+  if(t.id==='p-ow')P.own=t.value===''?-1:+t.value;
+  if(t.id==='p-ft'){P.fb.trig=t.value===''?-1:+t.value;pBody()}
+  if(t.id==='p-fa'){P.fb.act=t.value===''?-1:+t.value;pBody()}
+  if(t.id==='p-fo'){P.fb.own=t.value===''?-1:+t.value;pBody()}
+});
+$('#p-body').addEventListener('click',function(e){
+  var hb=e.target.closest('[data-h]');
+  if(hb){
+    var h=HARD[+hb.dataset.h],caught=!!P[h.catchBy],row;
+    if(caught){row=[h.t,'Caught at: '+CNAME[h.catchBy],'Check works. Now add a fallback so the case is not dropped.','pass']}
+    else{row=[h.t,'Reaches the user: no '+CNAME[h.catchBy].toLowerCase()+' in the plan','WRONG output delivered. Diagnosis: a missing check.','fail']}
+    P.log.push(row);pBody();return;
+  }
+  if(e.target.id==='p-c1'){
+    var m=[];
+    if(P.crit!==2)m.push('Choose a measurable success criterion: a number you can observe.');
+    if(P.risk<0||P.mit<0)m.push('Choose a risk and the mitigation that answers it.');
+    else{var need=['c1','c2','c3'][P.mit];if(P.risk!==P.mit)m.push('That mitigation does not answer that risk. Match the risk to its check.');else if(!P[need])m.push('You named a mitigation but did not build the check into the structure. Tick it above.')}
+    if(P.own<0||P.own>1)m.push('A risk needs a named human owner, not "'+(P.own===2?'nobody':P.own===3?'the AI tool':'no one')+'".');
+    if(pSteps2()>7)m.push('Over the 7-step budget: drop a step that adds no safety.');
+    var fb=$('#p-fb1');fb.className='fb show';
+    fb.innerHTML=m.length?m.join('<br>'):'<b class="ok-text">Balanced plan.</b> Go to step 2 and prototype it, then break it in step 3.';
+  }
+});
+pSteps();
+window.__lab.pressureRun=pressureRun;window.__lab.P=P;window.__lab.HARD=HARD;
+show(location.hash.slice(1)||'audit');
+})();
+</script>
+</body>
+</html>
